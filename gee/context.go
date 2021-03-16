@@ -15,7 +15,7 @@ type Context struct {
 
 	Method string
 	Path string
-
+	Params map[string]string
 	StatusCode int
 }
 

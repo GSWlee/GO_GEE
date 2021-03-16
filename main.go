@@ -7,6 +7,8 @@ import (
 )
 
 func main()  {
+
+
 	//新建web框架
 	app:=gee.New()
 
@@ -14,6 +16,8 @@ func main()  {
 	app.GET("/",indexHandler)
 	app.GET("/hello",helloHandler)
 	app.POST("/login",loginhandler)
+
+
 
 	//执行框架
 	log.Fatal(app.Run(":8080"))
