@@ -16,6 +16,12 @@ func main()  {
 	app.GET("/",indexHandler)
 	app.GET("/hello",helloHandler)
 	app.POST("/login",loginhandler)
+	app.GET("/hello/:name", func(c *gee.Context) {
+		c.String(http.StatusOK,"hello %s you're at %s\n",c.Param("name"),c.Path)
+	})
+	app.GET("/assets/*filepath", func(c *gee.Context) {
+		c.JSON(http.StatusOK,gee.H{"filepath":c.Param("filepath")})
+	})
 
 
 

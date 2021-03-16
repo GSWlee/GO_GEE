@@ -70,3 +70,8 @@ func (c *Context) HTML(code int,html string)  {
 	c.SetStatus("Content-Type","text/html")
 	c.Writer.Write([]byte(html))
 }
+
+func (c *Context) Param(key string) string {
+	value, _ := c.Params[key]
+	return value
+}

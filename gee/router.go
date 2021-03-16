@@ -120,8 +120,6 @@ func (r *router) getRoute(method string,path string) (*node, map[string]string) 
 	n:=root.search(searchparts,0)
 	if n!=nil{
 		parts:=splitPattern(n.pattern)
-		log.Println(parts)
-		log.Println(searchparts)
 		for index,value:=range parts{
 			if value[0]==':'{
 				params[value[1:]]=searchparts[index]
@@ -141,6 +139,7 @@ func (r* router) handle(c *Context)  {
 	n,parms:=r.getRoute(c.Method,c.Path)
 	if n!=nil{
 		c.Params=parms
+		log.Println(c)
 		key:=c.Method+"-"+n.pattern
 		r.routers[key](c)
 	}else{
