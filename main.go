@@ -16,6 +16,10 @@ func main()  {
 	app.GET("/",indexHandler)
 	app.GET("/hello",helloHandler)
 	app.POST("/login",loginhandler)
+	api:=app.Group("/api")
+	api.GET("/name", func(c *gee.Context) {
+		c.String(http.StatusOK,"name is qqq\n")
+	})
 	app.GET("/hello/:name", func(c *gee.Context) {
 		c.String(http.StatusOK,"hello %s you're at %s\n",c.Param("name"),c.Path)
 	})
