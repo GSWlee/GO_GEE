@@ -141,8 +141,9 @@ func (r* router) handle(c *Context)  {
 		c.Params=parms
 		log.Println(c)
 		key:=c.Method+"-"+n.pattern
-		r.routers[key](c)
+		c.handlers=append(c.handlers,r.routers[key])
 	}else{
 		c.String(http.StatusNotFound,"404 NOT FOUND: %s\n",c.Path)
 	}
+	c.Next()
 }
