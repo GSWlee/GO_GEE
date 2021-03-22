@@ -17,7 +17,7 @@ func onlyForV2() gee.HandlerFunc {
 	}
 }
 
-func main()  {
+func amain()  {
 
 
 	//新建web框架

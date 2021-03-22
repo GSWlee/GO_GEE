@@ -1,7 +1,9 @@
 package gee
 
 import (
+	"html/template"
 	"net/http"
+	"path"
 	"strings"
 )
 
@@ -21,6 +23,8 @@ type Engine struct {
 	*RouterGroup
 	router *router
 	groups []*RouterGroup //存储所有的路由组
+	htmlTemplate *template.Template
+	funcmap template.FuncMap
 }
 
 func (g *RouterGroup) Group(prefix string)  *RouterGroup{
@@ -86,4 +90,38 @@ func (engine *Engine) ServeHTTP(w http.ResponseWriter, req *http.Request) {
 	c:=NewContext(w,req)
 	c.handlers=middleware
 	engine.router.handle(c)
+}
+
+// create static handler
+func (group *RouterGroup) createStaticHandler(relativePath string, fs http.FileSystem) HandlerFunc {
+	absolutePath := path.Join(group.prefix, relativePath)
+	fileServer := http.StripPrefix(absolutePath, http.FileServer(fs))
+	return func(c *Context) {
+		file := c.Param("filepath")
+		// Check if file exists and/or if we have permission to access it
+		if _, err := fs.Open(file); err != nil {
+			c.Status(http.StatusNotFound)
+			return
+		}
+
+		fileServer.ServeHTTP(c.Writer, c.Request)
+	}
+}
+
+// serve static files
+func (group *RouterGroup) Static(relativePath string, root string) {
+	handler := group.createStaticHandler(relativePath, http.Dir(root))
+	urlPattern := path.Join(relativePath, "/*filepath")
+	// Register GET handlers
+	//在注册路由时，完成url路径对于服务器上实际文件系统的映射
+	//返回的handle中的fileServer对应的时给定的映射
+	group.GET(urlPattern, handler)
+}
+
+func (e *Engine)SetFuncmap(funcmap template.FuncMap)  {
+	e.funcmap=funcmap
+}
+
+func (e *Engine)LoadHTMLGlob(pattern string)  {
+	e.htmlTemplate=template.Must(template.New("").Funcs(e.funcmap).Parse(pattern))
 }
